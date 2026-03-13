@@ -1,0 +1,142 @@
+  /* Global CSS Variables for consistent theming and spacing across the entire website. */
+
+:root {
+  /* Color Palette */
+  
+  /* These variables can be easily updated to change the look and feel of the site without needing to modify individual styles. */
+  /* Will also make it possible to implement a dark mode in the future by simply overriding these variables with darker values */
+  --bg-main: #fcfdfa;
+  --text-main: #0a1a0a;
+  --text-muted: #4a5a4a;
+  --brand-primary: #003800;
+  --border-color: rgba(0, 56, 0, 0.1); /* Subtle green-tinted line that separates header and footer from the main content */
+  
+  --spacing-std: 20px;
+  --max-width: 1200px;
+}
+
+/* Basic Reset of * (ALL elements) to ensure consistent styling across browsers by overwriting their respective standard behaviour */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  
+  /* Sticky footer layout using CSS Grid. The footer will stick to the bottom of the viewport 
+     even if there isn't enough content in the main content area */
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+
+/***  Header Styles  ***/
+.site-header {
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--spacing-std);
+}
+
+.header-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--brand-primary);
+}
+
+.main-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 20px;
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  transition: opacity 0.2s;
+}
+
+.main-nav a:hover {
+  opacity: 0.8;
+}
+
+/***  Main Content Area  ***/
+.main-content {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 40px var(--spacing-std);
+  width: 100%;
+}
+
+/***  Footer Styles  ***/
+.site-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 40px var(--spacing-std);
+}
+
+.footer-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  /* Default mobile: 1 column */
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+.copyright {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 40px;
+}
+
+.footer-column h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column li {
+  margin-bottom: 8px;
+}
+
+/* Responsive Adjustments (Tablets and Desktops) */
+@media (min-width: 768px) {
+  .footer-container {
+    /* Larger screens: Layout copyright and columns side by side */
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+/* Mobile specific: Collapse menu if needed or handle overflow */
+@media (max-width: 480px) {
+  .header-container {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+}
