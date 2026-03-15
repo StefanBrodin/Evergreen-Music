@@ -1,4 +1,4 @@
-/* Container for the specific view logic, aligned with other pages (90.0rem) */
+/* Container for the specific view logic, aligned with other pages (90.0rem) */ 
 .view-container {
     max-width: 90.0rem;
     margin: 0 auto;
@@ -27,7 +27,7 @@
     color: var(--text-muted);
 }
 
-/* Hero Section: Grid with two columns for Image and Info */
+/* Grid with two columns for Image and Info */
 .group-hero {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -104,7 +104,7 @@
     padding-left: 2.0rem; 
 }
 
-/* --- ALBUM VIEW GRID LOGIC --- */
+/* Album View Grid Logic */
 
 /* Defines 2-column grid: Name (flexible) and Year (fixed 15rem) */
 .album-view-grid {
@@ -113,7 +113,7 @@
     align-items: center;
 }
 
-/* FIX: Ensures the header text for both columns looks identical */
+/* Ensures the header text for both columns looks identical */
 .list-header.album-view-grid .col-name,
 .list-header.album-view-grid .col-year {
     color: white;
@@ -134,7 +134,7 @@
     color: var(--text-muted);
 }
 
-/* --- BOTTOM ACTIONS --- */
+/* Bottom Actions */
 
 .view-footer {
     margin-top: 6.0rem;

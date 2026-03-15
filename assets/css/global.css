@@ -96,7 +96,7 @@ a:hover {
 .logo {
   font-family: var(--font-brand);
   font-weight: 650; /* Variable font = not locked to the standard weights like "normal" (400) or "bold" (700), it can be any value between 100 and 900! */
-  font-size: 2.6rem;
+  font-size: 3.9rem;
   letter-spacing: -0.02rem;
   color: var(--brand-primary);
   text-decoration: none; /* No underline for the brand identity */

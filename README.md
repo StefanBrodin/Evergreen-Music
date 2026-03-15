@@ -1,2 +1,4 @@
 # frontend-uppgift
-Inlämningsuppgift för denförsta delen i Frontendkursen
+Inlämningsuppgift B för första delen i Frontendkursen 
+
+Av: Stefan Brodin
