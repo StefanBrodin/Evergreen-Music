@@ -14,7 +14,6 @@
   font-size: 62.5%;
 
   /* Color Palette */
-  
   /* These variables can be easily updated to change the look and feel of the site without needing to modify individual styles. */
   /* Will also make it possible to implement a dark mode in the future by simply overriding these variables with darker values */
   --bg-main: #fcfdfa;
@@ -25,6 +24,8 @@
   
   --spacing-std: 2.0rem;
   --max-width: 120.0rem;
+
+  --radius: 0.8rem; /* Sets a consistent corner radius for the whole site */
 
   --font-brand: 'Lora', serif; /* A variable for the brand font, making it easy to change the logo font across the entire site by just updating this variable */
 }

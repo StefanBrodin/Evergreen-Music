@@ -1,0 +1,180 @@
+/* Specific variables for this page to ensure better contrast */
+:root {
+    /* Zebra stripes */
+    --bg-zebra: #f0f2eb; 
+    /* A defined border color for the list frame */
+    --list-border: rgba(0, 56, 0, 0.2); 
+}
+
+/* Search area styling */
+.search-area {
+    margin-bottom: 4.0rem;
+    display: flex;
+    justify-content: center;
+}
+
+.search-form {
+    display: flex;
+    gap: 1.0rem;
+    width: 100%;
+    max-width: 60.0rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 1.2rem 2.0rem;
+    border: 0.1rem solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 1.6rem;
+    outline: none;
+    background-color: white;
+}
+
+.search-input:focus {
+    border-color: var(--brand-primary);
+}
+
+.btn-search {
+    padding: 0 2.5rem;
+    background-color: var(--brand-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Music group list/table styling using Grid */
+.list-container {
+    max-width: 90.0rem;
+    margin: 0 auto;
+    border-radius: var(--radius);
+    overflow: hidden;
+    /* Stronger border and shadow for a defined "table" look */
+    border: 0.1rem solid var(--list-border);
+    box-shadow: 0 0.4rem 1.2rem rgba(0, 56, 0, 0.05);
+}
+
+.list-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 1.2rem 2.0rem;
+    background-color: var(--bg-main);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    border-bottom: 0.1rem solid var(--border-color);
+}
+
+/* Remove border from the last row to not double up with the container border */
+.list-row:last-child {
+    border-bottom: none;
+}
+
+/* Zebra Striping in the list to improve readability */
+.list-row:nth-child(even) {
+    background-color: var(--bg-zebra);
+}
+
+/* Header Row specific styling */
+.list-header {
+    background-color: var(--brand-primary) !important;
+    color: white;
+    font-weight: 700;
+    padding: 1.8rem 2.0rem;
+    border-bottom: none;
+}
+
+.list-header .col-name {
+    font-size: 1.8rem;
+}
+
+/* Hover Effect on rows */
+.list-row:not(.list-header):hover {
+    background-color: #ffffff;
+    /* A darker border on hover to "pop" the row */
+    outline: 0.1rem solid var(--brand-primary);
+    outline-offset: -0.1rem;
+    z-index: 2;
+    cursor: default;
+}
+
+/* Link styling within the list */
+.col-name a {
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--brand-primary);
+}
+
+.col-name a:hover {
+    text-decoration: underline;
+}
+
+/* Buttons in the list */
+.col-actions {
+    display: flex;
+    gap: 1.0rem;
+}
+
+.btn {
+    padding: 0.6rem 1.4rem;
+    font-size: 1.3rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    border: 0.1rem solid transparent;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    transition: transform 0.1s;
+}
+
+.btn-add { background-color: #ffffff; color: var(--brand-primary); }
+.btn-edit { background-color: #e2eadd; color: var(--brand-primary); border: 0.1rem solid rgba(0, 56, 0, 0.1); }
+.btn-delete { background-color: #fceeee; color: #a34c4c; border: 0.1rem solid rgba(163, 76, 76, 0.1); }
+
+.btn:hover { 
+    opacity: 0.9;
+    transform: translateY(-0.1rem);
+}
+
+/* Pagination styling */
+.pagination {
+    margin-top: 4.0rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.pag-nav, .pag-num {
+    text-decoration: none;
+    padding: 0.8rem 1.2rem;
+    border-radius: 0.4rem;
+    font-size: 1.4rem;
+    color: var(--text-muted);
+    background-color: var(--bg-zebra);
+    border: 0.1rem solid var(--border-color);
+}
+
+.pag-num.active {
+    background-color: var(--brand-primary);
+    color: white;
+    border-color: var(--brand-primary);
+}
+
+.pag-nav:hover, .pag-num:hover:not(.active) {
+    background-color: var(--border-color);
+    color: var(--text-main);
+}
+
+/* Responsive collapse for small screens */
+@media (max-width: 60.0rem) {
+    .list-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        text-align: center;
+        padding: 2.0rem;
+    }
+    .col-actions {
+        justify-content: center;
+    }
+}
