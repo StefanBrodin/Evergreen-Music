@@ -1,0 +1,181 @@
+/* Container for the specific view logic, aligned with other pages (90.0rem) */
+.view-container {
+    max-width: 90.0rem;
+    margin: 0 auto;
+}
+
+.group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3.0rem;
+    padding: 0 2.0rem; /* Aligns with global alignment grid */
+}
+
+.back-link {
+    font-size: 1.4rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--text-muted);
+}
+
+/* Hero Section: Grid with two columns for Image and Info */
+.group-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0; 
+    margin-bottom: 6.0rem;
+    background-color: var(--bg-alt);
+    border-radius: var(--radius);
+    overflow: hidden; 
+    border: 0.1rem solid var(--border-color);
+}
+
+/* Column 1: Image Handling */
+.group-image-container {
+    width: 100%;
+    height: 45.0rem; 
+}
+
+.group-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    object-position: center;
+    display: block;
+}
+
+/* Column 2: Group Details Card */
+.group-info-card {
+    padding: 4.0rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2.5rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-label {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.info-value {
+    font-size: 2.2rem;
+    font-family: var(--font-brand);
+    color: var(--brand-primary);
+}
+
+/* Members list styling */
+.member-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1.8rem;
+    color: var(--text-main);
+}
+
+.member-list li {
+    margin-bottom: 0.5rem;
+}
+
+/* Discography Section Titles */
+.section-title-alt {
+    font-family: var(--font-brand);
+    color: var(--brand-primary);
+    font-size: 2.4rem;
+    margin-bottom: 2.0rem;
+    padding-left: 2.0rem; 
+}
+
+/* --- ALBUM VIEW GRID LOGIC --- */
+
+/* Defines 2-column grid: Name (flexible) and Year (fixed 15rem) */
+.album-view-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 15.0rem; 
+    align-items: center;
+}
+
+/* FIX: Ensures the header text for both columns looks identical */
+.list-header.album-view-grid .col-name,
+.list-header.album-view-grid .col-year {
+    color: white;
+    font-weight: 600; /* Matching the weight of Album Title */
+    font-size: 1.6rem;
+    text-transform: none;
+    font-family: inherit;
+}
+
+/* Centering the year content and header */
+.album-view-grid .col-year {
+    text-align: center;
+}
+
+/* Optional styling for the year data in the rows (making it slightly more discreet than the title) */
+.list-row:not(.list-header) .col-year {
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+/* --- BOTTOM ACTIONS --- */
+
+.view-footer {
+    margin-top: 6.0rem;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-ok {
+    display: inline-block;
+    padding: 1.5rem 8.0rem;
+    background-color: var(--brand-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: 1.6rem;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.btn-ok:hover {
+    opacity: 0.9;
+}
+
+/* Responsive adjustments for mobile devices */
+@media (max-width: 48.0rem) {
+    .group-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.0rem;
+        text-align: center;
+        padding: 0;
+    }
+
+    .group-hero {
+        grid-template-columns: 1fr; 
+    }
+
+    .group-image-container {
+        height: 30.0rem;
+    }
+
+    .group-info-card {
+        padding: 3.0rem;
+        text-align: center;
+    }
+
+    .album-view-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 2.0rem;
+    }
+}

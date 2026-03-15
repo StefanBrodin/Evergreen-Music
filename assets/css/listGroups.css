@@ -6,18 +6,33 @@
     --list-border: rgba(0, 56, 0, 0.2); 
 }
 
-/* Search area styling */
+/* Layout wrapper to ensure the title and search bar align with the list-container (max-width: 90.0rem) */
+.list-layout-wrapper {
+    max-width: 90.0rem;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Styling for the main page heading */
+.page-title {
+    margin-bottom: 3.0rem;
+    color: var(--brand-primary);
+    font-family: var(--font-brand);
+    /* Padding matches the list-row padding (2.0rem) for perfect vertical alignment */
+    padding-left: 2.0rem;
+}
+
+/* Search area styling - contained within the layout wrapper */
 .search-area {
     margin-bottom: 4.0rem;
-    display: flex;
-    justify-content: center;
+    padding: 0 2.0rem; /* Ensures the search bar doesn't touch edges on small screens */
 }
 
 .search-form {
     display: flex;
     gap: 1.0rem;
     width: 100%;
-    max-width: 60.0rem;
+    max-width: 60.0rem; /* Keeps the search form from becoming too wide on desktops */
 }
 
 .search-input {
@@ -48,6 +63,10 @@
     font-weight: 600;
     /* Scale transition for a tactile feel when clicked */
     transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn-search:hover {
+    opacity: 0.9;
 }
 
 .btn-search:active {
@@ -98,7 +117,7 @@
     font-size: 1.8rem;
 }
 
-/* Hover Effect on rows */
+/* Hover Effect on rows - strictly visual to guide the eye */
 .list-row:not(.list-header):hover {
     background-color: #ffffff;
     /* A darker border on hover to "pop" the row */
@@ -108,7 +127,7 @@
     cursor: default;
 }
 
-/* Link styling within the list */
+/* Column logic and Link styling */
 .col-name {
     white-space: nowrap;     /* Prevents text from wrapping */
     overflow: hidden;        /* Hides text that overflows the container */
@@ -145,6 +164,7 @@
     transition: transform 0.1s;
 }
 
+/* Action button variations */
 .btn-add { background-color: #ffffff; color: var(--brand-primary); }
 .btn-edit { background-color: #e2eadd; color: var(--brand-primary); border: 0.1rem solid rgba(0, 56, 0, 0.1); }
 .btn-delete { background-color: #fceeee; color: #a34c4c; border: 0.1rem solid rgba(163, 76, 76, 0.1); }
@@ -156,7 +176,7 @@
 
 /* Pagination styling */
 .pagination {
-    margin-top: 4.0rem;
+    margin: 4.0rem 0 6.0rem 0;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -166,7 +186,6 @@
 .pag-nav, .pag-num {
     text-decoration: none;
     padding: 0.8rem 1.2rem;
-    /* Updated to use the global --radius for consistency */
     border-radius: var(--radius);
     font-size: 1.4rem;
     color: var(--text-muted);
@@ -187,17 +206,31 @@
 }
 
 /* Responsive collapse for small screens */
-/* Breakpoint updated to 48.0rem (480px) to better support tablets and landscape phones */
 @media (max-width: 48.0rem) {
+    .list-layout-wrapper {
+        padding: 0 1.0rem;
+    }
+
+    .page-title {
+        padding-left: 0;
+        text-align: center;
+    }
+
+    .search-area {
+        padding: 0;
+    }
+
     .list-row {
         grid-template-columns: 1fr;
         gap: 1.5rem;
         text-align: center;
         padding: 2.0rem;
     }
+
     .col-actions {
         justify-content: center;
     }
+
     .btn-search {
         padding: 0 1.5rem;
     }
