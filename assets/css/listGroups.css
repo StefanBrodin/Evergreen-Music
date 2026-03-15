@@ -28,20 +28,30 @@
     font-size: 1.6rem;
     outline: none;
     background-color: white;
+    /* Transition added for a smoother focus effect */
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .search-input:focus {
     border-color: var(--brand-primary);
+    /* Subtle glow for better accessibility */
+    box-shadow: 0 0 0 0.3rem rgba(0, 56, 0, 0.05);
 }
 
 .btn-search {
-    padding: 0 2.5rem;
+    padding: 0 3.0rem;
     background-color: var(--brand-primary);
     color: white;
     border: none;
     border-radius: var(--radius);
     cursor: pointer;
     font-weight: 600;
+    /* Scale transition for a tactile feel when clicked */
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn-search:active {
+    transform: scale(0.98);
 }
 
 /* Music group list/table styling using Grid */
@@ -99,10 +109,18 @@
 }
 
 /* Link styling within the list */
+.col-name {
+    white-space: nowrap;     /* Prevents text from wrapping */
+    overflow: hidden;        /* Hides text that overflows the container */
+    text-overflow: ellipsis; /* Adds "..." at the end if text is too long */
+    min-width: 0;            /* Allows flex/grid items to shrink below their content's natural width */
+}
+
 .col-name a {
     text-decoration: none;
     font-weight: 500;
     color: var(--brand-primary);
+    display: inline; /* Ensures the link only takes up as much space as its text */
 }
 
 .col-name a:hover {
@@ -148,11 +166,13 @@
 .pag-nav, .pag-num {
     text-decoration: none;
     padding: 0.8rem 1.2rem;
-    border-radius: 0.4rem;
+    /* Updated to use the global --radius for consistency */
+    border-radius: var(--radius);
     font-size: 1.4rem;
     color: var(--text-muted);
     background-color: var(--bg-zebra);
     border: 0.1rem solid var(--border-color);
+    transition: background-color 0.2s;
 }
 
 .pag-num.active {
@@ -167,7 +187,8 @@
 }
 
 /* Responsive collapse for small screens */
-@media (max-width: 60.0rem) {
+/* Breakpoint updated to 48.0rem (480px) to better support tablets and landscape phones */
+@media (max-width: 48.0rem) {
     .list-row {
         grid-template-columns: 1fr;
         gap: 1.5rem;
@@ -176,5 +197,8 @@
     }
     .col-actions {
         justify-content: center;
+    }
+    .btn-search {
+        padding: 0 1.5rem;
     }
 }
