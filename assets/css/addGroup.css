@@ -1,0 +1,184 @@
+/* Layout wrapper to ensure everything aligns with the list-container (max-width: 90.0rem) */
+.content-wrapper {
+    max-width: 90.0rem;
+    margin: 0 auto;
+    width: 100%;
+}
+
+h1 {
+    margin-bottom: 3.0rem;
+    color: var(--brand-primary);
+    font-family: var(--font-brand);
+    /* Aligns text with the content padding of the list rows (2.0rem) */
+    padding-left: 2.0rem;
+}
+
+.section-title {
+    margin: 5.0rem 0 2.0rem 0;
+    font-size: 2.2rem;
+    color: var(--brand-primary);
+    font-family: var(--font-brand);
+    /* Aligns h2 text with list content padding (2.0rem) */
+    padding-left: 2.0rem;
+}
+
+/* Form Container styled to look like a card, matching list-container width */
+.form-container {
+    background-color: var(--bg-alt);
+    padding: 3.0rem;
+    border-radius: var(--radius);
+    border: 0.1rem solid var(--border-color);
+    margin-bottom: 2.0rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 2.0rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.0rem;
+}
+
+/* Simulated File Input Styling */
+.file-input-wrapper {
+    display: flex;
+    gap: 1.0rem;
+}
+
+.file-input-wrapper .form-input {
+    flex: 1;
+    background-color: rgba(0, 0, 0, 0.03); /* Subtle tint to show readonly status */
+}
+
+label {
+    font-weight: 600;
+    font-size: 1.4rem;
+}
+
+.form-input {
+    padding: 1.2rem;
+    border: 0.1rem solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 1.6rem;
+    background-color: white;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 0.3rem rgba(0, 56, 0, 0.05);
+}
+
+/* --- ALBUM LIST GRID LOGIC --- */
+
+/* Defines a strict 3-column grid for both header and rows to ensure perfect alignment */
+/* Name (flexible), Year (fixed 15rem), Actions (fixed 18rem) */
+.album-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 15.0rem 18.0rem; 
+    align-items: center;
+}
+
+/* Ensures the header text in the "Year" column matches the "Name" column style exactly */
+.list-header.album-grid .col-name,
+.list-header.album-grid .col-year {
+    color: white;
+    font-weight: 600; 
+    font-size: 1.6rem;
+    text-transform: none;
+    font-family: inherit;
+}
+
+/* Centering the year content and header */
+.col-year {
+    text-align: center;
+    padding: 0 1.0rem;
+}
+
+/* Styling for the year data in rows (non-header) */
+.list-row:not(.list-header) .col-year {
+    font-weight: 400; 
+    color: var(--text-muted);
+}
+
+/* Aligns the action buttons to the far right of the grid cell */
+.album-grid .col-actions {
+    justify-content: flex-end;
+    display: flex;
+    gap: 1.0rem;
+}
+
+/* --- PAGE BOTTOM ACTIONS --- */
+
+.form-actions {
+    margin: 6.0rem 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 3.0rem;
+}
+
+.btn-cancel {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.btn-save {
+    padding: 1.5rem 5.0rem;
+    background-color: var(--brand-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.6rem;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.btn-save:hover {
+    opacity: 0.9;
+}
+
+.btn-save:active {
+    transform: scale(0.98);
+}
+
+/* Responsive adjustments for mobile devices */
+@media (max-width: 48.0rem) {
+    h1, .section-title {
+        padding-left: 0;
+        text-align: center;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    /* Stack columns on mobile for better readability */
+    .album-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 1.0rem;
+        padding: 2.0rem;
+    }
+
+    .col-year {
+        font-weight: 700;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+
+    .btn-save {
+        width: 100%;
+    }
+}
