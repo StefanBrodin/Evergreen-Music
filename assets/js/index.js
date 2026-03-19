@@ -5,6 +5,9 @@ const service = new MusicGroupService();
 const listContainer = document.getElementById('group-list-container');
 
 function renderList(pageNr) {
+    document.title = `Musikgruppslista - Evergreen Music`;
+    document.getElementById('page-h1').innerText = `Musikgruppslista`;
+
     // 1. Keep the header but clear the rest of the list container
     const header = listContainer.querySelector('.list-header');
     listContainer.innerHTML = '';
@@ -30,4 +33,8 @@ function renderList(pageNr) {
     });
 }
 
-renderList(0);
+// renderList(0);
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderList(0);
+});
