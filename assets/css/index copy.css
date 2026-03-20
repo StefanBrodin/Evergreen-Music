@@ -184,44 +184,26 @@
     gap: 0.8rem;
 }
 
-/* FIX: Updated to target buttons instead of a links that was used before and removed 'a' prefix here. 
-   Added a reset for button-specific browser styling.
-*/
 .pag-nav, .pag-num {
-    /* Button reset */
-    appearance: none;
-    border: 0.1rem solid var(--border-color);
-    cursor: pointer;
-    font-family: inherit;
-    line-height: normal;
-
-    /* Original styling */
     text-decoration: none;
     padding: 0.8rem 1.2rem;
     border-radius: var(--radius);
     font-size: 1.4rem;
     color: var(--text-muted);
     background-color: var(--bg-zebra);
-    transition: background-color 0.2s, color 0.2s;
+    border: 0.1rem solid var(--border-color);
+    transition: background-color 0.2s;
 }
 
 .pag-num.active {
     background-color: var(--brand-primary);
     color: white;
     border-color: var(--brand-primary);
-    cursor: default;
 }
 
-.pag-nav:hover:not(:disabled), .pag-num:hover:not(.active) {
+.pag-nav:hover, .pag-num:hover:not(.active) {
     background-color: var(--border-color);
     color: var(--text-main);
-}
-
-/* Styling for disabled buttons */
-.pag-nav:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    filter: grayscale(1);
 }
 
 /* Responsive collapse for small screens */

@@ -39,8 +39,8 @@ export function MusicGroupService() {
     };
 
 
-    // Create a mockup "database"/list of 997 music groups using the seeder
-    this.musicGroups = _seeder.toArray(997, createMusicGroup);
+    // Create a mockup "database"/list of 107 music groups using the seeder
+    this.musicGroups = _seeder.toArray(107, createMusicGroup);
 
     // Simple method to retrieve all music groups
     this.readAll = function() {
