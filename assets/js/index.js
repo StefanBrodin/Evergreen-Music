@@ -3,7 +3,7 @@ import { MusicGroupService } from './music-group-service.js';
 
 const service = new MusicGroupService();
 
-function renderList(pageNr) {
+async function renderList(pageNr) {
     document.title = `Musikgruppslista - Evergreen Music`;
     const h1 = document.getElementById('page-h1');
     if (h1) h1.innerText = `Musikgruppslista`;
@@ -16,14 +16,14 @@ function renderList(pageNr) {
     listContainer.innerHTML = ''; 
     listContainer.appendChild(header);
 
-    const pageData = service.readGroups(pageNr, 10);
+    const pageData = await service.readGroups(pageNr, 10);
 
     pageData.pageItems.forEach(group => {
         const row = document.createElement('div');
         row.className = 'list-row';
         row.innerHTML = `
             <div class="col-name">
-                <a href="view-group.html?id=${group.id}">${group.name}</a>
+                <a href="view-group.html?id=${group.musicGroupId}">${group.name}</a>
             </div>
             <div class="col-actions">
                 <button class="btn btn-edit">Ändra</button  >
@@ -35,7 +35,7 @@ function renderList(pageNr) {
 
     // Fill up with empty rows if less than 10 items in the list to maintain consistent height and 
     // pagination button position to avoid layout shifts. 
-const rowsToFill = 10 - pageData.pageItems.length;
+    const rowsToFill = 10 - pageData.pageItems.length;
     for (let i = 0; i < rowsToFill; i++) {
         const emptyRow = document.createElement('div');
         // Keep 'list-row' so it gets the same grid/padding

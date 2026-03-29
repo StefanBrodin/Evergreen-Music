@@ -1,78 +1,43 @@
 'use strict';
-import { seedGenerator, uniqueId } from './SeidoHelpers/seido-helpers.js';
 
-// The music group service that will manage the music groups. 
-export function MusicGroupService() {
+// Made MusicGroupService into a class to better match the structure of the API service that will be used later. 
+// The constructor is used to set up any common properties, and the methods are defined within the class body. 
+export class MusicGroupService {
 
-    // In the real application, code will be replaced with API calls to the backend server, but for now we'll use an in-memory
-    // array to store our music groups. This array will be filled with mockup music group objects generated from the seeder. 
-    const _seeder = new seedGenerator();
-    this.musicGroups = [];
+    // The baseUrl is the common denominator for all API calls, so we set it in the constructor. 
+    // This way, if the API endpoint changes, we only need to update it in one place.
+    constructor() {
+        this.baseUrl = 'https://music.api.public.seido.se/api';
+    }
 
-    // A private helper function to create a music group object from the seeder
-    let _nextId = 1;
+    // Retrieves a paginated list of music groups from the API. It takes pageNr, pageSize, and an optional filter string as parameters.
+    async readGroups(pageNr, pageSize, filter = '') {
 
-    const createMusicGroup = (_sgen) => {
-        const group = {
-            id: _nextId++,
-            name: _sgen.musicBandName,
-            establishedYear: Math.floor(Math.random() * (2024 - 1960) + 1960),
-            genre: _sgen.fromString("Rock, Pop, Jazz, Metal, Synth, Blues"),
-
-            // For this early mockup, the same static image URL for all groups is used. In the real application this will be stored in the backend.
-            imageUrl: 'assets/images/group-images/depeche-mode.jpg',
+        // Using the parameters from the Swagger documentation to construct the API URL. 
+        const url = `${this.baseUrl}/MusicGroups/Read?seeded=true&flat=true&pageNr=${pageNr}&pageSize=${pageSize}&filter=${filter}`;
+        
+        try {
+            const response = await fetch(url);
             
-            // Creating 3-6 members per group using the seeder's toArray method
-            members: _sgen.toArray(Math.floor(Math.random() * 4 + 3), (s) => ({
-                id: uniqueId(), 
-                name: s.fullName
-            })),
+            if (!response.ok) {
+                throw new Error(`Kunde inte hämta data: ${response.statusText}`);
+            }
 
-            // Creating 2-8 albums per group using the seeder's toArray method
-            albums: _sgen.toArray(Math.floor(Math.random() * 7 + 2), (s) => ({
-                id: uniqueId(),
-                title: s.musicAlbumName,
-                releaseYear: Math.floor(Math.random() * (2024 - 1970) + 1970)
-            }))
-        };
-        return group;
-    };
+            const data = await response.json();
 
-
-    // Create a mockup "database"/list of 157 music groups using the seeder
-    this.musicGroups = _seeder.toArray(157, createMusicGroup);
-
-    // Simple method to retrieve all music groups
-    this.readAll = function() {
-        return this.musicGroups;
-    };
-
-    // A method to retrieve a single music group by its ID. It uses the Array.find() method to search through the musicGroups array 
-    // and return the group that matches the provided ID. The ID is parsed as an integer to ensure it matches the type of the ID's stored 
-    // in the musicGroups array. If no group is found with the given ID, it will return undefined.
-    this.readGroup = function(id) {
-        return this.musicGroups.find(group => group.id === parseInt(id));
-    };
-    
-    // A method to retrieve a paginated list of music groups. It takes two parameters: pageNr (the page number to retrieve) and pageSize (the number of items per page).
-    this.readGroups = function(pageNr, pageSize) {
-        const ret = {
-            pageNr: pageNr,
-            pageSize: pageSize,
-            totalCount: this.musicGroups.length,
-            totalPages: Math.ceil(this.musicGroups.length / pageSize),
-            pageItems: []
-        };
-
-        // Calculating the start and end index for slicing the musicGroups array based on the provided page number and page size. 
-        // The start index is calculated as pageNr multiplied by pageSize, and the end index is calculated as start plus pageSize. 
-        // The slice method is then used to extract the relevant portion of the musicGroups array corresponding to the requested page, 
-        // and this subset of groups is assigned to ret.pageItems before returning the result. 
-        const start = pageNr * pageSize;
-        const end = start + pageSize;
-
-        ret.pageItems = this.musicGroups.slice(start, end);
-
-        return ret;
-    };
+            // Mapping the metadata from the API response to the format expected by the frontend already created. 
+            // The API returns 'pageCount' for total pages, which we use directly. 
+            return {
+                pageNr: data.pageNr,
+                pageSize: data.pageSize,
+                totalCount: data.dbItemsCount,
+                totalPages: data.pageCount,
+                pageItems: data.pageItems // The API already returns the actual items in the correct format so they can be used directly without further mapping.
+            };
+        } catch (error) {
+            console.error('Service Error (readGroups):', error);
+            // Returning an empty page structure in case of error to give the frontend a chance to handle it gracefully instead of crashing. 
+            return { pageNr, pageSize, totalCount: 0, totalPages: 0, pageItems: [] };
+        }
+    }
 }
