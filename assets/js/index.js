@@ -2,6 +2,7 @@
 import { MusicGroupService } from './music-group-service.js';
 
 const service = new MusicGroupService();
+let currentSearchTerm = ''; // Global variable to keep track of the current search term (if any) for pagination
 
 async function renderList(pageNr) {
     document.title = `Musikgruppslista - Evergreen Music`;
@@ -9,15 +10,29 @@ async function renderList(pageNr) {
     if (h1) h1.innerText = `Musikgruppslista`;
 
     const listContainer = document.getElementById('group-list-container');
+    const feedbackContainer = document.getElementById('search-feedback');
+    
     if (!listContainer) return;
+
+    // Fetch data from the service using search term filtering. 
+    // The service will handle the API call and return the paginated data.
+    const pageData = await service.readGroups(pageNr, 10, currentSearchTerm);
+
+    // Show feedback about the search results if a search term is active
+    if (currentSearchTerm && feedbackContainer) {
+        feedbackContainer.innerHTML = `Följande <b>${pageData.totalCount}</b> grupper innehåller sökordet '<b>${currentSearchTerm}</b>':`;
+        feedbackContainer.style.display = 'block';
+    } else if (feedbackContainer) {
+        feedbackContainer.style.display = 'none';
+    }
 
     // Keep the header but clear the rest of the list container
     const header = listContainer.querySelector('.list-header');
     listContainer.innerHTML = ''; 
     listContainer.appendChild(header);
 
-    const pageData = await service.readGroups(pageNr, 10);
-
+    // Render the rows for the current page. The service already returns the items 
+    // in the correct format so they can be used directly.
     pageData.pageItems.forEach(group => {
         const row = document.createElement('div');
         row.className = 'list-row';
@@ -26,7 +41,7 @@ async function renderList(pageNr) {
                 <a href="view-group.html?id=${group.musicGroupId}">${group.name}</a>
             </div>
             <div class="col-actions">
-                <button class="btn btn-edit">Ändra</button  >
+                <button class="btn btn-edit">Ändra</button>
                 <button class="btn btn-delete">Radera</button>
             </div>
         `;
@@ -100,7 +115,8 @@ function renderPagination(pageData) {
 
     for (let i = start; i <= end; i++) {
         const btn = document.createElement('button');
-        // Sets the active button to have an "active" class for styling.
+
+        // Sets the currently active button to have an "active" class for styling.
         btn.className = `pag-num ${i === pageData.pageNr ? 'active' : ''}`;
         btn.innerText = i + 1;
         btn.onclick = () => {
@@ -122,5 +138,22 @@ function renderPagination(pageData) {
 
 // Wait for the DOM to be fully loaded before trying to manipulate it
 document.addEventListener('DOMContentLoaded', () => {
-    renderList(0);
+    const searchForm = document.querySelector('.search-form');
+    const searchInput = document.querySelector('.search-input');
+
+    if (searchForm && searchInput) {
+        searchForm.addEventListener('submit', (e) => {
+
+            // Prevent the default form submission behavior which would cause a page reload. 
+            // This makes it possible to handle the search in JavaScript instead.
+            e.preventDefault(); 
+            currentSearchTerm = searchInput.value.trim();
+            
+            // Start from the first page when performing a search to make sure
+            // the user sees the beginning of the filtered results.
+            renderList(0); 
+        });
+    }
+
+    renderList(0); // Första laddningen
 });

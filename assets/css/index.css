@@ -74,6 +74,20 @@
     transform: scale(0.98);
 }
 
+#search-feedback {
+    font-size: 1.6rem;
+    color: var(--text-main);
+    padding-top: 2.0rem;
+    padding-bottom: 2.0rem; 
+    margin-bottom: 2rem; 
+    margin-top: 2.0rem;
+    display: none;
+}
+
+#search-feedback b {
+    color: var(--brand-primary);
+}
+
 /* Music group list/table styling using Grid */
 .list-container {
     max-width: 90.0rem;

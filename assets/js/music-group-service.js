@@ -10,10 +10,10 @@ export class MusicGroupService {
         this.baseUrl = 'https://music.api.public.seido.se';
     }
 
-    // Retrieves a paginated list of music groups from the API. It takes pageNr, pageSize, and an optional filter string as parameters.
+    // Retrieves a paginated list of music groups from the service. It takes pageNr, pageSize, and an optional filter string as parameters.
     async readGroups(pageNr, pageSize, filter = '') {
 
-        // Using the parameters from the Swagger documentation to construct the API URL. 
+        // Using the parameters from the API-documentation by Swagger to construct the API URL. 
         const url = `${this.baseUrl}/api/MusicGroups/Read?seeded=true&flat=true&pageNr=${pageNr}&pageSize=${pageSize}&filter=${filter}`;
         
         try {
