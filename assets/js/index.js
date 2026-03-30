@@ -86,9 +86,10 @@ function renderPagination(pageData) {
     // Buttons have a "disabled" property that can be set to true to disable them, which is more semantically correct than 
     // just adding a visual "disabled" class. This also prevents the button from being clickable when disabled.
     prev.disabled = pageData.pageNr === 0; 
-    prev.onclick = () => {
+    prev.addEventListener('click', (e) => {
         if (pageData.pageNr > 0) renderList(pageData.pageNr - 1);
-    };
+    });
+
     nav.appendChild(prev);
 
     // *** Pagination Logic for Constant Button Count (current/active button in the middle) ***
@@ -119,9 +120,9 @@ function renderPagination(pageData) {
         // Sets the currently active button to have an "active" class for styling.
         btn.className = `pag-num ${i === pageData.pageNr ? 'active' : ''}`;
         btn.innerText = i + 1;
-        btn.onclick = () => {
+        btn.addEventListener('click', () => {
             renderList(i);
-        };
+        });
         nav.appendChild(btn);
     }
 
@@ -130,9 +131,9 @@ function renderPagination(pageData) {
     next.className = `pag-nav ${pageData.pageNr === pageData.totalPages - 1 ? 'disabled' : ''}`;
     next.innerText = 'Nästa';
     next.disabled = pageData.pageNr === pageData.totalPages - 1;
-    next.onclick = () => {
+    next.addEventListener('click', (e) => {
         if (pageData.pageNr < pageData.totalPages - 1) renderList(pageData.pageNr + 1);
-    };
+    });
     nav.appendChild(next);
 }
 
