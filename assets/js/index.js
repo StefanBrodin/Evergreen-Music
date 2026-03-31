@@ -45,7 +45,33 @@ async function renderList(pageNr) {
                 <button class="btn btn-delete">Radera</button>
             </div>
         `;
+
+        // *** Delete button logic ***
+        // Find the delete button within the row and attach a click event listener to handle deletion of the group.
+        const deleteBtn = row.querySelector('.btn-delete');
+        
+        deleteBtn.addEventListener('click', async (e) => {
+            // Stop the click event from propagating its way back up through the DOM (to the row's click event which 
+            // could navigate to the group details (view-group.html) page). At the moment the row <div> itself doesn't
+            // have a click event, but I might add that later on. 
+            e.stopPropagation();
+
+            const confirmed = confirm(`Är du säker på att du vill radera "${group.name}"?`);
+            
+            if (confirmed) {
+                const success = await service.deleteGroup(group.musicGroupId);
+                
+                if (success) {
+                    // Re-render the current page if the deletion was successful to reflect the changes. 
+                    await renderList(pageData.pageNr);
+                } else {
+                    alert("Något gick fel vid raderingen. Försök igen.");
+                }
+            }
+        });
+
         listContainer.appendChild(row);
+
     });
 
     // Fill up with empty rows if less than 10 items in the list to maintain consistent height and 

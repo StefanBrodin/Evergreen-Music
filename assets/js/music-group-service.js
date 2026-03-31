@@ -57,4 +57,25 @@ export class MusicGroupService {
             return null;
         }
     }
+
+    // Deletes a music group by its ID. This method sends a DELETE request to the API and returns true if the deletion was successful, or false if it failed.
+    async deleteGroup(id) {
+
+    const url = `${this.baseUrl}/api/MusicGroups/DeleteItem/${id}`;
+    
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error(`Kunde inte radera gruppen: ${response.statusText}`);
+        }
+
+        return true; // Return true to indicate successful deletion
+    } catch (error) {
+        console.error('Service Error (deleteGroup):', error);
+        return false;
+    }
+}
 }
