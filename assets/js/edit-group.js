@@ -35,22 +35,54 @@ async function loadGroupData() {
 
 function setupEventListeners() {
 
-    // Update group details 
+// Update group details 
     document.getElementById('edit-group-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        // Validation constants for the "established year" to ensure it's within a reasonable range.
+        const ceilingYear = new Date().getFullYear(); 
+        const floorYear   = 1900; 
+
+        // Reading and parsing input values from the DOM
+        const name = document.getElementById('group-name').value.trim();
+        const yearInput = document.getElementById('formed-year').value.trim();
+        const genreInput = document.getElementById('genre').value;
+
+        // *** Validation Logic ***
+
+        // Validation of the group name to ensure it's not empty.
+        if (!name) {
+            alert("Du måste ange ett namn på musikgruppen.");
+            return;
+        }
+
+        // Parsing and validating the established year.
+        const establishedYear = parseInt(yearInput);
+        if (isNaN(establishedYear) || establishedYear < floorYear || establishedYear > ceilingYear) {
+            alert(`Vänligen ange ett giltigt startår mellan ${floorYear} och ${ceilingYear}.`);
+            return;
+        }
+
+        // Parsing the genre. If the select-dropdown is empty or invalid, we ensure it's a number.
+        // We also ensure it's a positive number (or 0) as required by the system.
+        const genre = parseInt(genreInput);
+        if (isNaN(genre) || genre < 0) {
+            alert("Vänligen välj en giltig genre från listan.");
+            return;
+        }
         
-        // Create a DTO (Data Transfer Object) for the updated group information based on the form fields. 
+        // Create a DTO (Data Transfer Object) using the updated group information based on the form fields. 
         // This complete DTO will be sent to the API by the updateGroup() method in the service.
         const groupDto = {
             musicGroupId: groupId,
-            name: document.getElementById('group-name').value.trim(),
-            establishedYear: parseInt(document.getElementById('formed-year').value),
-            genre: parseInt(document.getElementById('genre').value),
+            name: name,
+            establishedYear: establishedYear,
+            genre: genre,
             seeded: false,
             
-            // Important to include any existing albumsId and artistsId arrays from currentGroup when updating,
+            // Important to include any existing albums and artists arrays from currentGroup when updating,
             // since the API expects the full object including related entities for updates. If not included,
-            // any existing group members and albums from the group will be removed when updating.
+            // any existing group members and albums from the group will be *removed* from DB when updating.
             albumsId: currentGroup.albums ? currentGroup.albums.map(a => a.albumId) : [],
             artistsId: currentGroup.artists ? currentGroup.artists.map(a => a.artistId) : []
         };
@@ -70,35 +102,65 @@ function setupEventListeners() {
         }
     });
 
-
     // Add new group member
     document.getElementById('add-member-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        const firstName = document.getElementById('member-firstname').value.trim();
+        const lastName = document.getElementById('member-lastname').value.trim();
+
+        // Validation: Ensure we have at least some name data
+        if (!firstName && !lastName) {
+            alert("Du måste ange minst ett namn (förnamn eller efternamn) för medlemmen.");
+            return;
+        }
+
         const artistDto = {
-            firstName: document.getElementById('member-firstname').value.trim(),
-            lastName: document.getElementById('member-lastname').value.trim(),
+            firstName: firstName,
+            lastName: lastName,
             seeded: false,
-            musicGroupsId: [groupId] // Connect the new artist to the current group by including the groupId in the musicGroupsId array
+            musicGroupsId: [groupId] 
         };
 
         const result = await service.createArtist(artistDto);
         if (result) {
             document.getElementById('add-member-form').reset();
-            await loadGroupData(); // Refresh the group data to show the new member in the list
+            await loadGroupData(); 
         } else {
             alert("Kunde inte skapa gruppmedlemmen.\n\nTips: Formulärfält får endast innehålla engelska bokstäver (a-z), siffror, mellanslag och /.");
         }
-    }); 
+    });
 
 
     // Add new album
     document.getElementById('add-album-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        const name = document.getElementById('album-name').value.trim();
+        const yearInput = document.getElementById('album-year').value.trim();
         
+        // Valid year range used for validation in the next step.
+        const ceilingYear = new Date().getFullYear(); // Future albums can not exist
+        const floorYear   = 1900;                     // Albums older than 1900 are invalid
+
+        // Validation for the "release year" input to ensure it's a valid number and within a reasonable range before allowing the user to save changes.
+        // This prevents sending invalid data to the API and ensures data integrity for album release years.
+        const releaseYear = parseInt(yearInput);
+        if (isNaN(releaseYear) || releaseYear < floorYear || releaseYear > ceilingYear) {
+            alert(`Vänligen ange ett giltigt utgivningsår mellan ${floorYear} och ${ceilingYear}.`);
+            return;
+        }
+
+        // Validation: Name
+        if (!name) {
+            alert("Vänligen ange ett namn på albumet.");
+            return;
+        }
+
+        // Create a new album DTO (Data Transfer Object) that matches the expected format of the API as defined in the backend schema.
         const albumDto = {
-            name: document.getElementById('album-name').value.trim(),
-            releaseYear: parseInt(document.getElementById('album-year').value),
+            name: name,
+            releaseYear: releaseYear,
             musicGroupId: groupId,
             seeded: false
         };
@@ -106,7 +168,7 @@ function setupEventListeners() {
         const result = await service.createAlbum(albumDto);
         if (result) {
             document.getElementById('add-album-form').reset();
-            await loadGroupData(); // Refresh the group data to show the new album in the list
+            await loadGroupData(); 
         } else {
             alert("Kunde inte skapa albumet.\n\nTips: Formulärfält får endast innehålla engelska bokstäver (a-z), siffror, mellanslag och /.");
         }
@@ -152,7 +214,7 @@ function renderMembers(artists) {
             if (confirm(`Vill du verkligen radera ${artistName}?`)) {
                 const success = await service.deleteArtist(artistId);
                 if (success) {
-                    await loadGroupData(); // Update the list after deletion
+                    await loadGroupData(); // Refresh the group data to show the updated members list after deletion
                 } else {
                     alert("Kunde inte radera artisten.");
                 }
@@ -183,12 +245,20 @@ async function showEditMemberForm(artistId) {
 
     // Save button for editing group members
     document.getElementById(`save-member-${artistId}`).addEventListener('click', async () => {
+        const firstName = document.getElementById(`edit-fname-${artistId}`).value.trim();
+        const lastName = document.getElementById(`edit-lname-${artistId}`).value.trim();
+
+        // Validation: Ensure we have at least some name data before allowing the user to save changes
+        if (!firstName && !lastName) {
+            alert("Medlemmen måste ha minst ett förnamn eller efternamn.");
+            return;
+        }
+
         const dto = {
             artistId: artistId,
-            firstName: document.getElementById(`edit-fname-${artistId}`).value.trim(),
-            lastName: document.getElementById(`edit-lname-${artistId}`).value.trim(),
+            firstName: firstName,
+            lastName: lastName,
             seeded: false,
-            // Importatnt to include the current groupId in the musicGroupsId array to keep the connection between the artist and the group when updating.
             musicGroupsId: [groupId] 
         };
         
@@ -196,9 +266,9 @@ async function showEditMemberForm(artistId) {
         if (result) {
             await loadGroupData();
         } else {
-            alert("Kunde inte uppdatera medlem. Kontrollera att fälten inte är tomma.");
+            alert("Kunde inte uppdatera medlem.");
         }
-    });
+    }); 
 
     // Cancel button for editing group members
     document.getElementById(`cancel-member-${artistId}`).addEventListener('click', () => {
@@ -222,7 +292,7 @@ function renderAlbums(albums) {
         </div>
     `).join('');
 
-    // Attach events to the newly rendered edit buttons
+    // Attach events to the edit buttons
     container.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', () => showEditAlbumForm(btn.dataset.id));
     });
@@ -236,7 +306,7 @@ function renderAlbums(albums) {
             if (confirm(`Vill du verkligen radera albumet "${albumName}"?`)) {
                 const success = await service.deleteAlbum(albumId);
                 if (success) {
-                    await loadGroupData(); // Update the list after deletion
+                    await loadGroupData(); // Refresh the group data to show the updated album list after deletion
                 } else {
                     alert("Kunde inte radera albumet.");
                 }
@@ -266,16 +336,42 @@ async function showEditAlbumForm(albumId) {
 
     // Save button for editing albums
     document.getElementById(`save-album-${albumId}`).addEventListener('click', async () => {
+
+        // Validation for the "release year" input to ensure it's a valid number and within a reasonable range before allowing the user to save changes.
+        // This prevents sending invalid data to the API and ensures data integrity for album release years.
+        const ceilingYear = new Date().getFullYear(); // Future albums can not exist
+        const floorYear   = 1900;                     // Albums older than 1900 are invalid 
+        
+        // Reading and parsing the year input from the DOM to validate it before allowing the user to save changes 
+        const yearInputElement = document.getElementById(`edit-ayear-${albumId}`);
+        if (!yearInputElement) return; 
+
+        const yearInput = yearInputElement.value.trim();
+        const releaseYear = parseInt(yearInput);
+
+        // Check if the user input is a valid number (and a reasonable year)
+        if (isNaN(releaseYear) || releaseYear < floorYear || releaseYear > ceilingYear) {
+            alert(`Vänligen ange ett giltigt och rimligt årtal mellan ${floorYear} och ${ceilingYear}.`);
+            return; // STOP the save operation if the year is invalid to prevent sending bad data to the API
+        }
+
+        // Validation of the album name to ensure it's not empty before allowing the user to save changes.
+        const albumName = document.getElementById(`edit-aname-${albumId}`).value.trim();
+        if (!albumName) {
+            alert("Albumet måste ha ett namn.");
+            return;
+        }
+
         const dto = {
             albumId: albumId,
-            name: document.getElementById(`edit-aname-${albumId}`).value.trim(),
-            releaseYear: parseInt(document.getElementById(`edit-ayear-${albumId}`).value),
+            name: albumName,
+            releaseYear: releaseYear,
             musicGroupId: groupId,
             // Important to include the current groupId in the musicGroupId field to keep the connection between the album and the group when updating.
             seeded: false
         };
         const result = await service.updateAlbum(albumId, dto);
-        if (result) await loadGroupData();
+        if (result) await loadGroupData(); // Refresh the group data to show the updated album info after saving changes
         else alert("Kunde inte uppdatera album.");
     });
 
