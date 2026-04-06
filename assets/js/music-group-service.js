@@ -29,11 +29,11 @@ export class MusicGroupService {
             // Mapping the metadata from the API response to the format expected by the frontend already created. 
             // The API returns 'pageCount' for total pages, which we use directly. 
             return {
-                pageNr: data.pageNr,
-                pageSize: data.pageSize,
-                totalCount: data.dbItemsCount,
-                totalPages: data.pageCount,
-                pageItems: data.pageItems // The API already returns the actual items in the correct format so they can be used directly without further mapping.
+                pageNr: data?.pageNr ?? pageNr,
+                pageSize: data?.pageSize ?? pageSize,
+                totalCount: data?.dbItemsCount ?? 0,
+                totalPages: data?.pageCount ?? 0,
+                pageItems: data?.pageItems ?? [] // Always return an array for pageItems, even if it's empty, to avoid issues in the frontend when trying to iterate over it.
             };
         } catch (error) {
             console.error('Service Error (readGroups):', error);
@@ -53,7 +53,7 @@ export class MusicGroupService {
             if (!response.ok) throw new Error('Kunde inte hitta gruppen');
             
             const data = await response.json();
-            return data.item; // Return the inner "item" which contains the actual group details, since the API wraps it in an outer object.   
+            return data?.item ?? null; // Return the inner "item" which contains the actual group details, since the API wraps it in an outer object.   
         } catch (error) {
             console.error('Service Error (readGroup):', error);
             return null;
@@ -113,7 +113,7 @@ export class MusicGroupService {
             const data = await response.json();
 
             // The API wraps the actual group object in an outer "item" property, so we return data.item to return the unwrapped group details.
-            return data.item; 
+            return data?.item ?? null; 
         } catch (error) {
             console.error('Service Error (createGroup):', error);
             return null;
@@ -145,7 +145,7 @@ export class MusicGroupService {
             const data = await response.json();
 
             // The API wraps the actual artist object in an outer "item" property, so we return data.item to return the unwrapped group details.
-            return data.item; 
+            return data?.item ?? null; 
         } catch (error) {
             console.error('Service Error (createArtist):', error);
             return null; 
@@ -177,7 +177,7 @@ export class MusicGroupService {
             const data = await response.json();
 
             // The API wraps the actual album object in an outer "item" property, so we return data.item to return the unwrapped group details.
-            return data.item; 
+            return data?.item ?? null;
         } catch (error) {
             console.error('Service Error (createAlbum):', error);
             return null; 
@@ -206,7 +206,7 @@ export class MusicGroupService {
             }
 
             const data = await response.json();
-            return data.item; 
+            return data?.item ?? null;
         } catch (error) {
             console.error('Service Error (updateGroup):', error);
             return null;
@@ -235,7 +235,7 @@ export class MusicGroupService {
             }
 
             const data = await response.json();
-            return data.item;
+            return data?.item ?? null;
         } catch (error) {
             console.error('Service Error (updateArtist):', error);
             return null;
@@ -264,7 +264,7 @@ export class MusicGroupService {
             }
 
             const data = await response.json();
-            return data.item;
+            return data?.item ?? null;
         } catch (error) {
             console.error('Service Error (updateAlbum):', error);
             return null;
