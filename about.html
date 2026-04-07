@@ -28,43 +28,42 @@
             
             <section class="about-intro">
                 <p class="lead-text">
-                    Det här är en inlämningsuppgift i kursen Frontend-utveckling på Teknikhögskolan i Gävle. Syftet med uppgiften är att skapa en enkel, statisk webbplats 
-                    som senare kan bli interaktiv och dynamisk genom att koppla på Javascript. 
+                    Det här är en inlämningsuppgift i kursen Frontend-utveckling på Teknikhögskolan i Gävle. Projektet har utvecklats från en statisk webbplats till en dynamisk Single Page Application (SPA).
                 </p>
-                <p class="body-text"> Webbplatsen är byggd med HTML och CSS och fokuserar på att implementera en ren och modern design med hjälp av CSS Grid och Flexbox för layout, samt 
-                    variabler för färger och typografi. Det kommer till exempel bli möjligt att enkelt implementera en mörkare färgpalett i framtiden genom att bara ändra
-                    några få variabler i CSS, utan att behöva gå in och ändra varje enskild stil.</p>
+                <p class="body-text"> Webbplatsen är byggd med HTML, CSS och modern JavaScript (ES6+). Den fokuserar på att implementera en ren design med CSS Grid och Flexbox, kombinerat med en robust logik för att hantera data i realtid via ett externt API.</p>
                 <p class="body-text">Skapad av Stefan Brodin.</p>
             </section>
 
             <section class="highlights-grid">
                 <div class="highlight-card">
-                    <h3>Modern Arkitektur</h3>
-                    <p>Byggd med ren CSS Grid och variabler för maximal prestanda och enkelt underhåll.</p>
+                    <h3>API-integration (CRUD)</h3>
+                    <p>Hantering av musikgrupper, artister och album gentemot ett REST-API med asynkron programmering (Fetch & Async/Await).</p>
                 </div>
                 <div class="highlight-card">
-                    <h3>Responsiv Design</h3>
-                    <p>Sömlös upplevelse oavsett om du använder en smartphone, surfplatta, laptop eller desktop.</p>
+                    <h3>UX & Stabilitet</h3>
+                    <p>Fasta listlängder motverkar Layout Shifts och en intelligent "Sliding Window"-paginering håller navigeringen centrerad.</p>
                 </div>
                 <div class="highlight-card">
-                    <h3>CRUD</h3>
-                    <p>Knappar och länkar för CRUD-funktionalitet som senare kommer introduceras genom JavaScript.</p>
+                    <h3>Modulär Arkitektur</h3>
+                    <p>Logiken är modulär och använder en service för API-kommunikation med strikt felhantering via try/catch för en stabil användar-upplevelse.</p>
                 </div>
             </section>
 
             <section class="tech-section">
                 <h2>Teknisk specifikation</h2>
                 <ul class="tech-list">
+                    <li><strong>JavaScript:</strong> ES6+ Moduler & Async/Await</li>
+                    <li><strong>Datahantering:</strong> REST API & Service-baserad logik</li>
                     <li><strong>Layout:</strong> CSS Grid & Flexbox</li>
-                    <li><strong>Typografi:</strong> Lora (Rubriker) & Inter (Brödtext)</li>
+                    <li><strong>Typografi:</strong> Lora & Inter (Variable Fonts)</li>
+                    <li><strong>UX-optimering:</strong> CLS-skydd & Centrerad paginering</li>
                     <li><strong>Design:</strong> Atomic Design Principles</li>
-                    <li><strong>Interaktion:</strong> CSS Transitions & JavaScript-ready</li>
                 </ul>
             </section>
         </div>
     </main>
 
-<footer class="site-footer">
+    <footer class="site-footer">
         <div class="footer-container">
             <div class="copyright">
                 &copy; 2026 Evergreen Music. All rights reserved.
