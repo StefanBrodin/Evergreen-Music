@@ -17,29 +17,25 @@ export class MusicGroupService {
         // Using the parameters from the API-documentation by Swagger to construct the API URL. 
         const url = `${this.baseUrl}/api/MusicGroups/Read?seeded=false&flat=true&pageNr=${pageNr}&pageSize=${pageSize}&filter=${filter}`;
         
-        try {
-            const response = await fetch(url);
-            
-            if (!response.ok) {
-                throw new Error(`Kunde inte hämta data: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-
-            // Mapping the metadata from the API response to the format expected by the frontend already created. 
-            // The API returns 'pageCount' for total pages, which we use directly. 
-            return {
-                pageNr: data?.pageNr ?? pageNr,
-                pageSize: data?.pageSize ?? pageSize,
-                totalCount: data?.dbItemsCount ?? 0,
-                totalPages: data?.pageCount ?? 0,
-                pageItems: data?.pageItems ?? [] // Always return an array for pageItems, even if it's empty, to avoid issues in the frontend when trying to iterate over it.
-            };
-        } catch (error) {
-            console.error('Service Error (readGroups):', error);
-            // Returning an empty page structure in case of error to give the frontend a chance to handle it gracefully instead of crashing. 
-            return { pageNr, pageSize, totalCount: 0, totalPages: 0, pageItems: [] };
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            // Throwing an error instead of returning null/empty data, allowing the UI to handle the failure case more explicitly (e.g., by showing an error message to the user).
+            const errorText = await response.text();
+            throw new Error(`Kunde inte hämta grupper (${response.status}): ${errorText || response.statusText}`);
         }
+
+        const data = await response.json();
+
+        // Mapping the metadata from the API response to the format expected by the frontend already created. 
+        // The API returns 'pageCount' for total pages, which we use directly. 
+        return {
+            pageNr: data?.pageNr ?? pageNr,
+            pageSize: data?.pageSize ?? pageSize,
+            totalCount: data?.dbItemsCount ?? 0,
+            totalPages: data?.pageCount ?? 0,
+            pageItems: data?.pageItems ?? [] // Always return an array for pageItems, even if it's empty, to avoid issues in the frontend when trying to iterate over it.
+        };
     }
 
 
@@ -48,140 +44,111 @@ export class MusicGroupService {
     
         const url = `${this.baseUrl}/api/MusicGroups/ReadItem?id=${id}&flat=false`;
         
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Kunde inte hitta gruppen');
-            
-            const data = await response.json();
-            return data?.item ?? null; // Return the inner "item" which contains the actual group details, since the API wraps it in an outer object.   
-        } catch (error) {
-            console.error('Service Error (readGroup):', error);
-            return null;
+        const response = await fetch(url);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Kunde inte hitta gruppen (${response.status}): ${errorText || response.statusText}`);
         }
+        
+        const data = await response.json();
+        return data?.item ?? null; // Return the inner "item" which contains the actual group details, since the API wraps it in an outer object.   
     }
 
 
-    // Deletes a music group by its ID. Sends a DELETE request to the API and returns true if the deletion was successful, or false if it failed.
+    // Deletes a music group by its ID. Sends a DELETE request to the API and returns true if the deletion was successful.
     async deleteGroup(id) {
 
         const url = `${this.baseUrl}/api/MusicGroups/DeleteItem/${id}`;
         
-        try {
-            const response = await fetch(url, {
-                method: 'DELETE',
-                headers: {
-                    'accept': 'text/plain' // Tells the API that we expect a plain text response
-                }
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text(); 
-                throw new Error(`Fel ${response.status}: ${errorText}`);
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'accept': 'text/plain' // Tells the API that we expect a plain text response
             }
+        });
 
-            return true; // Return true to indicate successful deletion
-
-        } catch (error) {
-            console.error('Service Error (deleteGroup):', error);
-            return false; // Return false to indicate failed deletion
+        if (!response.ok) {
+            const errorText = await response.text(); 
+            throw new Error(`Fel vid radering (${response.status}): ${errorText || response.statusText}`);
         }
+
+        return true; // Return true to indicate successful deletion
     }
 
 
     // Creates a new music group using the provided groupDto object by sending a POST request to the API with the group data in JSON format.
-    // Returns the created group object if successful, returns null if it fails.
+    // Returns the created group object if successful.
     async createGroup(groupDto) {
         const url = `${this.baseUrl}/api/MusicGroups/CreateItem`;
         
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Tells the API that the data sent in the body is JSON data.
-                    'accept': 'application/json'        // Tells the API that we expect JSON data in response. 
-                },
-                // JSON.stringify transforms the JavaScript object (groupDto) into a JSON string, which is the format expected by the API for the request body.
-                body: JSON.stringify(groupDto)
-            });
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // Tells the API that the data sent in the body is JSON data.
+                'accept': 'application/json'        // Tells the API that we expect JSON data in response. 
+            },
+            // JSON.stringify transforms the JavaScript object (groupDto) into a JSON string, which is the format expected by the API for the request body.
+            body: JSON.stringify(groupDto)
+        });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`API Error: ${response.status} - ${errorText}`);
-            }
-
-            // The API returns the created group object in the response body, so we parse it as JSON and return it. 
-            const data = await response.json();
-
-            // The API wraps the actual group object in an outer "item" property, so we return data.item to return the unwrapped group details.
-            return data?.item ?? null; 
-        } catch (error) {
-            console.error('Service Error (createGroup):', error);
-            return null;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Kunde inte skapa grupp (${response.status}): ${errorText || response.statusText}`);
         }
+
+        // The API returns the created group object in the response body, so we parse it as JSON and return it. 
+        const data = await response.json();
+
+        // The API wraps the actual group object in an outer "item" property, so we return data.item to return the unwrapped group details.
+        return data?.item ?? null; 
     }
 
 
     // Creates a new artist using the provided artistDto object by sending a POST request to the API with the artist data in JSON format.
-    // Returns the created artist object if successful, returns null if it fails.
+    // Returns the created artist object if successful.
     async createArtist(artistDto) {
         const url = `${this.baseUrl}/api/Artists/CreateItem`;
 
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json', // Tells the API that the data sent in the body is JSON data.
-                    'accept': 'application/json'        // Tells the API that we expect JSON data in response. 
-                }, 
-                body: JSON.stringify(artistDto)
-            });
-            
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`API Error: ${response.status} - ${errorText}`);
-            }
-
-            // The API returns the created group object in the response body, so we parse it as JSON and return it. 
-            const data = await response.json();
-
-            // The API wraps the actual artist object in an outer "item" property, so we return data.item to return the unwrapped group details.
-            return data?.item ?? null; 
-        } catch (error) {
-            console.error('Service Error (createArtist):', error);
-            return null; 
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', // Tells the API that the data sent in the body is JSON data.
+                'accept': 'application/json'        // Tells the API that we expect JSON data in response. 
+            }, 
+            body: JSON.stringify(artistDto)
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Kunde inte skapa artist (${response.status}): ${errorText || response.statusText}`);
         }
+
+        const data = await response.json();
+        return data?.item ?? null; 
     }
 
 
     // Creates a new album using the provided albumDto object by sending a POST request to the API with the album data in JSON format.
-    // Returns the created album object if successful, returns null if it fails.
+    // Returns the created album object if successful.
     async createAlbum(albumDto) {
         const url = `${this.baseUrl}/api/Albums/CreateItem`;
 
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json', // Tells the API that the data sent in the body is JSON data.
-                    'accept': 'application/json'        // Tells the API that we expect JSON data in response. 
-                }, 
-                body: JSON.stringify(albumDto)
-            });
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', // Tells the API that the data sent in the body is JSON data.
+                'accept': 'application/json'        // Tells the API that we expect JSON data in response. 
+            }, 
+            body: JSON.stringify(albumDto)
+        });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`API Error: ${response.status} - ${errorText}`);
-            }
-
-            // The API returns the created group object in the response body, so we parse it as JSON and return it. 
-            const data = await response.json();
-
-            // The API wraps the actual album object in an outer "item" property, so we return data.item to return the unwrapped group details.
-            return data?.item ?? null;
-        } catch (error) {
-            console.error('Service Error (createAlbum):', error);
-            return null; 
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Kunde inte skapa album (${response.status}): ${errorText || response.statusText}`);
         }
+
+        const data = await response.json();
+        return data?.item ?? null;
     }
 
 
@@ -190,27 +157,22 @@ export class MusicGroupService {
     async updateGroup(id, groupDto) {
         const url = `${this.baseUrl}/api/MusicGroups/UpdateItem/${id}`;
         
-        try {
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'accept': 'application/json'
-                },
-                body: JSON.stringify(groupDto)
-            });
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'accept': 'application/json'
+            },
+            body: JSON.stringify(groupDto)
+        });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`API Error: ${response.status} - ${errorText}`);
-            }
-
-            const data = await response.json();
-            return data?.item ?? null;
-        } catch (error) {
-            console.error('Service Error (updateGroup):', error);
-            return null;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Kunde inte uppdatera grupp (${response.status}): ${errorText || response.statusText}`);
         }
+
+        const data = await response.json();
+        return data?.item ?? null;
     }
 
 
@@ -219,27 +181,22 @@ export class MusicGroupService {
     async updateArtist(id, artistDto) {
         const url = `${this.baseUrl}/api/Artists/UpdateItem/${id}`;
         
-        try {
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'accept': 'application/json'
-                },
-                body: JSON.stringify(artistDto)
-            });
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'accept': 'application/json'
+            },
+            body: JSON.stringify(artistDto)
+        });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`API Error: ${response.status} - ${errorText}`);
-            }
-
-            const data = await response.json();
-            return data?.item ?? null;
-        } catch (error) {
-            console.error('Service Error (updateArtist):', error);
-            return null;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Kunde inte uppdatera artist (${response.status}): ${errorText || response.statusText}`);
         }
+
+        const data = await response.json();
+        return data?.item ?? null;
     }
 
 
@@ -248,61 +205,55 @@ export class MusicGroupService {
     async updateAlbum(id, albumDto) {
         const url = `${this.baseUrl}/api/Albums/UpdateItem/${id}`;
         
-        try {
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'accept': 'application/json'
-                },
-                body: JSON.stringify(albumDto)
-            });
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'accept': 'application/json'
+            },
+            body: JSON.stringify(albumDto)
+        });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`API Error: ${response.status} - ${errorText}`);
-            }
-
-            const data = await response.json();
-            return data?.item ?? null;
-        } catch (error) {
-            console.error('Service Error (updateAlbum):', error);
-            return null;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Kunde inte uppdatera album (${response.status}): ${errorText || response.statusText}`);
         }
+
+        const data = await response.json();
+        return data?.item ?? null;
     }
 
 
-    // Deletes an artist by its ID using a DELETE request. Returns true if successful, false if it fails.
+    // Deletes an artist by its ID using a DELETE request. Returns true if successful.
     async deleteArtist(id) {
-        try {
-            const response = await fetch(`${this.baseUrl}/api/Artists/DeleteItem/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'accept': 'text/plain'
-                }
-            });
-            return response.ok;
-        } catch (error) {
-            console.error("Service Error (deleteArtist):", error);
-            return false;
+        const response = await fetch(`${this.baseUrl}/api/Artists/DeleteItem/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'accept': 'text/plain'
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Fel vid radering av artist (${response.status}): ${errorText || response.statusText}`);
         }
+        return true;
     }
 
 
-    // Deletes an album by its ID using a DELETE request. Returns true if successful, false if it fails.
+    // Deletes an album by its ID using a DELETE request. Returns true if successful.
     async deleteAlbum(id) {
-        try {
-            const response = await fetch(`${this.baseUrl}/api/Albums/DeleteItem/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'accept': 'text/plain'
-                }
-            });
-            return response.ok;
-        } catch (error) {
-            console.error("Service Error (deleteAlbum):", error);
-            return false;
+        const response = await fetch(`${this.baseUrl}/api/Albums/DeleteItem/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'accept': 'text/plain'
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Fel vid radering av album (${response.status}): ${errorText || response.statusText}`);
         }
+        return true;
     }
 }
-
