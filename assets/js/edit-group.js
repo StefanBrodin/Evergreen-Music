@@ -11,25 +11,30 @@ const groupId = urlParams.get('id');
 let currentGroup = null; 
 
 async function loadGroupData() {
-    const group = await service.readGroup(groupId);
-    if (!group) return;
+    try {
+        const group = await service.readGroup(groupId);
+        if (!group) return;
 
-    currentGroup = group; // Store the full group data to the global currentGroup variable for later use in updates
+        currentGroup = group; // Store the full group data to the global currentGroup variable for later use in updates
 
-    // Fill basic info
-    const nameField = document.getElementById('group-name'); 
-    const genreField = document.getElementById('genre');
-    const yearField = document.getElementById('formed-year'); 
-    const titleElement = document.getElementById('edit-title');
+        // Fill basic info
+        const nameField = document.getElementById('group-name'); 
+        const genreField = document.getElementById('genre');
+        const yearField = document.getElementById('formed-year'); 
+        const titleElement = document.getElementById('edit-title');
 
-    if (nameField) nameField.value = group?.name ?? '';
-    if (genreField) genreField.value = group?.genre ?? '';
-    if (yearField) yearField.value = group?.establishedYear ?? '';
-    if (titleElement) titleElement.innerText = `Redigera ${group?.name ?? 'musikgrupp'}`;
+        if (nameField) nameField.value = group?.name ?? '';
+        if (genreField) genreField.value = group?.genre ?? '';
+        if (yearField) yearField.value = group?.establishedYear ?? '';
+        if (titleElement) titleElement.innerText = `Redigera ${group?.name ?? 'musikgrupp'}`;
 
-    // Render the current "group member" and "album" lists
-    renderMembers(group?.artists ?? []);
-    renderAlbums(group?.albums ?? []);
+        // Render the current "group member" and "album" lists
+        renderMembers(group?.artists ?? []);
+        renderAlbums(group?.albums ?? []);
+    } catch (error) {
+        console.error('Load Error:', error);
+        alert(`Kunde inte ladda gruppdata: ${error.message}`);
+    }
 }
 
 
@@ -87,18 +92,23 @@ function setupEventListeners() {
             artistsId: currentGroup?.artists?.map(a => a.artistId) ?? []
         };
 
-        const result = await service.updateGroup(groupId, groupDto);
-        if (result) {
-            alert("Gruppens information har sparats!");
-            
-            // Update the global currentGroup variable with the new data so that it stays in sync for future updates 
-            // to members and albums without needing to re-fetch the group data from the API.
-            currentGroup = result; 
-            
-            const title = document.getElementById('edit-title');
-            if (title) title.innerText = `Redigera ${groupDto.name}`;
-        } else {
-            alert("Kunde inte uppdatera gruppen.");
+        try {
+            const result = await service.updateGroup(groupId, groupDto);
+            if (result) {
+                alert("Gruppens information har sparats!");
+                
+                // Update the global currentGroup variable with the new data so that it stays in sync for future updates 
+                // to members and albums without needing to re-fetch the group data from the API.
+                currentGroup = result; 
+                
+                const title = document.getElementById('edit-title');
+                if (title) title.innerText = `Redigera ${groupDto.name}`;
+            } else {
+                alert("Kunde inte uppdatera gruppen.");
+            }
+        } catch (error) {
+            console.error('Update Error:', error);
+            alert(`Ett fel uppstod vid uppdatering: ${error.message}`);
         }
     });
 
@@ -122,12 +132,17 @@ function setupEventListeners() {
             musicGroupsId: [groupId] 
         };
 
-        const result = await service.createArtist(artistDto);
-        if (result) {
-            document.getElementById('add-member-form').reset();
-            await loadGroupData(); 
-        } else {
-            alert("Kunde inte skapa gruppmedlemmen.\n\nTips: Formulärfält får endast innehålla engelska bokstäver (a-z), siffror, mellanslag och /.");
+        try {
+            const result = await service.createArtist(artistDto);
+            if (result) {
+                document.getElementById('add-member-form').reset();
+                await loadGroupData(); 
+            } else {
+                alert("Kunde inte skapa gruppmedlemmen.\n\nTips: Formulärfält får endast innehålla engelska bokstäver (a-z), siffror, mellanslag och /.");
+            }
+        } catch (error) {
+            console.error('Create Artist Error:', error);
+            alert(`Kunde inte lägga till medlem: ${error.message}`);
         }
     });
 
@@ -165,12 +180,17 @@ function setupEventListeners() {
             seeded: false
         };
 
-        const result = await service.createAlbum(albumDto);
-        if (result) {
-            document.getElementById('add-album-form').reset();
-            await loadGroupData(); 
-        } else {
-            alert("Kunde inte skapa albumet.\n\nTips: Formulärfält får endast innehålla engelska bokstäver (a-z), siffror, mellanslag och /.");
+        try {
+            const result = await service.createAlbum(albumDto);
+            if (result) {
+                document.getElementById('add-album-form').reset();
+                await loadGroupData(); 
+            } else {
+                alert("Kunde inte skapa albumet.\n\nTips: Formulärfält får endast innehålla engelska bokstäver (a-z), siffror, mellanslag och /.");
+            }
+        } catch (error) {
+            console.error('Create Album Error:', error);
+            alert(`Kunde inte skapa album: ${error.message}`);
         }
     });
 
@@ -212,11 +232,16 @@ function renderMembers(artists) {
             const artistName = btn.closest('.list-row')?.querySelector('.col-name')?.innerText ?? "artisten";
             
             if (confirm(`Vill du verkligen radera ${artistName}?`)) {
-                const success = await service.deleteArtist(artistId);
-                if (success) {
-                    await loadGroupData(); // Refresh the group data to show the updated members list after deletion
-                } else {
-                    alert("Kunde inte radera artisten.");
+                try {
+                    const success = await service.deleteArtist(artistId);
+                    if (success) {
+                        await loadGroupData(); // Refresh the group data to show the updated members list after deletion
+                    } else {
+                        alert("Kunde inte radera artisten.");
+                    }
+                } catch (error) {
+                    console.error('Delete Artist Error:', error);
+                    alert(`Ett fel uppstod: ${error.message}`);
                 }
             }
         });
@@ -262,11 +287,16 @@ async function showEditMemberForm(artistId) {
             musicGroupsId: [groupId] 
         };
         
-        const result = await service.updateArtist(artistId, dto);
-        if (result) {
-            await loadGroupData();
-        } else {
-            alert("Kunde inte uppdatera medlem.");
+        try {
+            const result = await service.updateArtist(artistId, dto);
+            if (result) {
+                await loadGroupData();
+            } else {
+                alert("Kunde inte uppdatera medlem.");
+            }
+        } catch (error) {
+            console.error('Update Artist Error:', error);
+            alert(`Kunde inte spara ändringar: ${error.message}`);
         }
     }); 
 
@@ -304,11 +334,16 @@ function renderAlbums(albums) {
             const albumName = btn.closest('.list-row')?.querySelector('.col-name')?.innerText ?? "albumet";
 
             if (confirm(`Vill du verkligen radera albumet "${albumName}"?`)) {
-                const success = await service.deleteAlbum(albumId);
-                if (success) {
-                    await loadGroupData(); // Refresh the group data to show the updated album list after deletion
-                } else {
-                    alert("Kunde inte radera albumet.");
+                try {
+                    const success = await service.deleteAlbum(albumId);
+                    if (success) {
+                        await loadGroupData(); // Refresh the group data to show the updated album list after deletion
+                    } else {
+                        alert("Kunde inte radera albumet.");
+                    }
+                } catch (error) {
+                    console.error('Delete Album Error:', error);
+                    alert(`Ett fel uppstod: ${error.message}`);
                 }
             }
         });
@@ -370,9 +405,15 @@ async function showEditAlbumForm(albumId) {
             // Important to include the current groupId in the musicGroupId field to keep the connection between the album and the group when updating.
             seeded: false
         };
-        const result = await service.updateAlbum(albumId, dto);
-        if (result) await loadGroupData(); // Refresh the group data to show the updated album info after saving changes
-        else alert("Kunde inte uppdatera album.");
+
+        try {
+            const result = await service.updateAlbum(albumId, dto);
+            if (result) await loadGroupData(); // Refresh the group data to show the updated album info after saving changes
+            else alert("Kunde inte uppdatera album.");
+        } catch (error) {
+            console.error('Update Album Error:', error);
+            alert(`Kunde inte spara albumet: ${error.message}`);
+        }
     });
 
     // Cancel button for editing albums
