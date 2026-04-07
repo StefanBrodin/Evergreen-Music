@@ -57,14 +57,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 artistsId: []  // Mandatory according to the schema, but an empty array for now since artist creation isn't handled in this form, but in step2.
             };
 
-            const result = await service.createGroup(groupDto);
+            // Handling errors from the service call to create a new music group, and providing user feedback based on the success or failure of the operation. 
+            try {
+                const result = await service.createGroup(groupDto);
 
-            if (result?.musicGroupId) {
-                // Using ?? to ensure that "undefined" isn't shown in the alert if the name is missing for some reason.
-                alert(`Gruppen "${result?.name ?? 'musikgruppen'}" har skapats!`);
-                window.location.href = `edit-group.html?id=${result.musicGroupId}`; // Redirect to the edit page after successful creation for step 2 (adding members and albums)
-            } else {
-                alert('Det gick inte att skapa gruppen.\n\nTips: Formulärfält får endast innehålla engelska bokstäver (a-z), siffror, mellanslag och /.');
+                if (result?.musicGroupId) {
+                    // Using ?? to ensure that "undefined" isn't shown in the alert if the name is missing for some reason.
+                    alert(`Gruppen "${result?.name ?? 'musikgruppen'}" har skapats!`);
+                    window.location.href = `edit-group.html?id=${result.musicGroupId}`; // Redirect to the edit page after successful creation for step 2 (adding members and albums)
+                } else {
+                    // The server response was OK (nothing to catch) but the returned object did not look like expected. 
+                    alert('Servern svarade, men kunde inte bekräfta att gruppen skapades.');
+                }
+            } catch (error) {
+                // Here we catch the error thrown by the service and display the actual message to the user
+                console.error('Submit Error:', error);
+                alert(`Ett fel uppstod: ${error.message}\n\nTips: Kontrollera att du bara använder tillåtna tecken och att anslutningen fungerar.`);
             }
         });
     }
