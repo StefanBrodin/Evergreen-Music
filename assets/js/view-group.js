@@ -16,15 +16,24 @@ async function init() {
 
     // 2. Fetch data from the service (asynchronous call)
     // We use readGroup which calls the API with flat=false to get related data
-    const group = await service.readGroup(groupId);
+try {
+        const group = await service.readGroup(groupId);
 
-    if (group) {
-        // Here we pass 'group' directly because the service already 
-        // stripped away the outer "item" layer.
-        renderGroupDetails(group); 
-    } else {
+        if (group) {
+            // Here we pass 'group' directly because the service already 
+            // stripped away the outer "item" layer.
+            renderGroupDetails(group); 
+        } else {
+            const titleElement = document.getElementById('group-name');
+            if (titleElement) titleElement.innerText = "Gruppen hittades inte (felaktigt ID)";
+        }
+    } catch (error) {
+        // Catching errors thrown by the service and updating the UI to reflect the failure, instead of just logging it. 
+        console.error('Initialization Error:', error);
         const titleElement = document.getElementById('group-name');
-        if (titleElement) titleElement.innerText = "Gruppen hittades inte (felaktigt ID)";
+        if (titleElement) {
+            titleElement.innerText = `Ett fel uppstod: ${error.message}`;
+        }
     }
 }
 
