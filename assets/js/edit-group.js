@@ -233,8 +233,9 @@ function renderMembers(artists) {
             
             if (confirm(`Vill du verkligen radera ${artistName}?`)) {
                 try {
-                    const success = await service.deleteArtist(artistId);
-                    if (success) {
+                    const deletedArtist = await service.deleteArtist(artistId);
+                    if (deletedArtist) {
+                        alert(`Artisten "${deletedArtist.firstName} ${deletedArtist.lastName}" har raderats.`);
                         await loadGroupData(); // Refresh the group data to show the updated members list after deletion
                     } else {
                         alert("Kunde inte radera artisten.");
@@ -335,8 +336,9 @@ function renderAlbums(albums) {
 
             if (confirm(`Vill du verkligen radera albumet "${albumName}"?`)) {
                 try {
-                    const success = await service.deleteAlbum(albumId);
-                    if (success) {
+                    const deletedAlbum = await service.deleteAlbum(albumId);
+                    if (deletedAlbum) {
+                        alert(`Albumet "${deletedAlbum.name}" har raderats.`);
                         await loadGroupData(); // Refresh the group data to show the updated album list after deletion
                     } else {
                         alert("Kunde inte radera albumet.");

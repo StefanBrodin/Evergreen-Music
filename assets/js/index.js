@@ -87,9 +87,10 @@ async function renderList(pageNr) {
             
             if (confirmed) {
                 try {
-                    const success = await service.deleteGroup(group?.musicGroupId);
+                    const deletedGroup = await service.deleteGroup(group?.musicGroupId);
                     
-                    if (success) {
+                    if (deletedGroup) {
+                        alert(`Musikgruppen "${deletedGroup.name}" har raderats.`);
                         // Re-render the current page if the deletion was successful to reflect the changes. 
                         await renderList(pageData?.pageNr ?? 0);
                     } else {

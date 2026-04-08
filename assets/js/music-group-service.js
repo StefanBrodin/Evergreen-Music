@@ -55,7 +55,7 @@ export class MusicGroupService {
     }
 
 
-    // Deletes a music group by its ID. Sends a DELETE request to the API and returns true if the deletion was successful.
+    // Deletes a music group by its ID. Sends a DELETE request to the API and returns the deleted item if successful.
     async deleteGroup(id) {
 
         const url = `${this.baseUrl}/api/MusicGroups/DeleteItem/${id}`;
@@ -63,7 +63,7 @@ export class MusicGroupService {
         const response = await fetch(url, {
             method: 'DELETE',
             headers: {
-                'accept': 'text/plain' // Tells the API that we expect a plain text response
+                'accept': 'application/json' // Tells the API that we expect JSON data in response.
             }
         });
 
@@ -72,7 +72,8 @@ export class MusicGroupService {
             throw new Error(`Fel vid radering (${response.status}): ${errorText || response.statusText}`);
         }
 
-        return true; // Return true to indicate successful deletion
+        const data = await response.json();
+        return data?.item ?? null; // Unwraps and return the deleted group object to indicate successful deletion
     }
 
 
@@ -229,7 +230,7 @@ export class MusicGroupService {
         const response = await fetch(`${this.baseUrl}/api/Artists/DeleteItem/${id}`, {
             method: 'DELETE',
             headers: {
-                'accept': 'text/plain'
+                'accept': 'application/json' // Tells the API that we expect JSON data in response.
             }
         });
 
@@ -237,7 +238,8 @@ export class MusicGroupService {
             const errorText = await response.text();
             throw new Error(`Fel vid radering av artist (${response.status}): ${errorText || response.statusText}`);
         }
-        return true;
+        const data = await response.json();
+        return data?.item ?? null;
     }
 
 
@@ -246,7 +248,7 @@ export class MusicGroupService {
         const response = await fetch(`${this.baseUrl}/api/Albums/DeleteItem/${id}`, {
             method: 'DELETE',
             headers: {
-                'accept': 'text/plain'
+                'accept': 'application/json' // Tells the API that we expect JSON data in response.
             }
         });
 
@@ -254,6 +256,7 @@ export class MusicGroupService {
             const errorText = await response.text();
             throw new Error(`Fel vid radering av album (${response.status}): ${errorText || response.statusText}`);
         }
-        return true;
+        const data = await response.json();
+        return data?.item ?? null;
     }
 }
