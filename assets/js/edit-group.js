@@ -207,6 +207,18 @@ function renderMembers(artists) {
     const container = document.getElementById('member-list-target');
     if (!container) return;
     
+    // Check if there are no artists and render an informative empty state row
+    if (artists.length === 0) {
+        container.innerHTML = `
+            <div class="list-row empty-row">
+                <div class="col-name empty-text">
+                    Inga gruppmedlemmar ännu, lägg till nya i formuläret ovan.
+                </div>
+            </div>
+        `;
+        return;
+    }
+
     container.innerHTML = artists.map(a => `
         <div class="list-row member-grid" id="member-row-${a.artistId}">
             <div class="col-name">
@@ -311,6 +323,18 @@ async function showEditMemberForm(artistId) {
 function renderAlbums(albums) {
     const container = document.getElementById('album-list-target');
     if (!container) return;
+
+    // Check if there are no albums and render an informative empty state row
+    if (albums.length === 0) {
+        container.innerHTML = `
+            <div class="list-row empty-row">
+                <div class="col-name empty-text">
+                    Inga album ännu, lägg till nya album i formuläret ovan.
+                </div>
+            </div>
+        `;
+        return;
+    }
 
     container.innerHTML = albums.map(a => `
         <div class="list-row album-grid" id="album-row-${a.albumId}">
