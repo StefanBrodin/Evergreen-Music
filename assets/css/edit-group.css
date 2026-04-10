@@ -36,6 +36,15 @@ h1 {
     margin-bottom: 1.0rem;
 }
 
+/* Styling for the new "Add new group members" and "Add new albums" headers */
+.add-box-title {
+    font-size: 1.6rem; 
+    margin-bottom: 2.5rem; 
+    color: var(--brand-primary);
+    font-weight: 700;
+    display: block;
+}
+
 .form-group {
     display: flex;
     flex-direction: column;
@@ -61,7 +70,7 @@ h1 {
 }
 
 .inline-form .btn-add {
-    height: 4.6rem; 
+    height: 4.3rem; 
     padding: 0 3.0rem;
     display: flex;
     align-items: center;
